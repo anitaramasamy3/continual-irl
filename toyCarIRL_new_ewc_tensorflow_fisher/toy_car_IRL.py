@@ -30,16 +30,16 @@ class irlAgent:
         self.minimumT = self.randomT
         self.sess = tf.InteractiveSession()
         saved_model = 'saved-models_brown/evaluatedPolicies/1-164-150-100-50000-100000.h5'
-        self.model = Policy_Network(self.num_states, [164, 150], self.sess, saved_model)
+        self.model = Policy_Network(self.num_states, [164, 150], self.sess)
         xtrain = np.load('xtrain_brown.npy')
         ytrain = np.load('ytrain_brown.npy')
         self.model.compute_fisher(xtrain, ytrain)
         self.model.star_vars()
-        self.model.update_ewc_loss(200)
+        self.model.update_ewc_loss(500)
 
     def getRLAgentFE(self, W, i): #get the feature expectations of a new poliicy using RL agent
-        saved_model = 'saved-models_brown/evaluatedPolicies/1-164-150-100-50000-100000.h5'
-        self.model.restore_model(saved_model)
+        # saved_model = 'saved-models_brown/evaluatedPolicies/1-164-150-100-50000-100000.h5'
+        # self.model.restore_model(saved_model)
         IRL_helper(W, self.behavior, self.num_frames, i, self.model) # train the agent and save the model in a file used below
         saved_model = 'saved-models_'+self.behavior+'/evaluatedPolicies/'+str(i)+'-164-150-100-50000-'+str(self.num_frames)+'.h5' # use the saved model to get the FE
         # model = Policy_Network(self.num_states, [164, 150], self.sess, saved_model)

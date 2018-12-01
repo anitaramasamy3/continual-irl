@@ -8,7 +8,7 @@ class Policy_Network:
 	def __init__(self, num_states, params, sess, load = None):
 		
 		self.keep_prob = 0.8
-		self.learning_rate = 0.001
+		self.learning_rate = 0.1
 		with tf.variable_scope('Policy_Network', reuse = tf.AUTO_REUSE) as scope:
 			self.weights1 = self.get_weights([num_states, params[0]], 'layer1_weights')
 			self.biases1 = self.get_bias_variable([params[0]], 'layer1_biases')
@@ -27,6 +27,7 @@ class Policy_Network:
 		
 		self.sess = sess
 		self.sess.run(init)
+		# restore_vars = [ var for var in tf.global_variables() if 'Adam' not in var.name ]	
 		self.saver = tf.train.Saver()
 		if load != None:
 			self.restore_model(load)
@@ -91,9 +92,13 @@ class Policy_Network:
 		ders = self.sess.run(tf.gradients(self.loss, self.var_list), feed_dict = {self.X: input_vector, self.Y: labels})
 
 		for v in range(len(self.var_list)):
-			self.F.append(np.sum(np.square(ders[v]), axis=0)/input_vector.shape[0])
+			self.F.append(np.abs(ders[v]))
+			# print(ders[v].shape)
 		print('Fisher terms')
-		print(self.F)
+		# print(len(self.F))
+		# print(self.F)
+		# for i in range(6):
+			# print(self.F[i].shape)
 
 	def star_vars(self):
 
@@ -109,8 +114,9 @@ class Policy_Network:
 		for v in range(len(self.var_list)):
 			self.loss += (lam/2) * tf.reduce_sum(tf.multiply(self.F[v].astype(np.float32),tf.square(self.var_list[v] - self.star_vars[v])))
 		print('update_loss')
-		# self.optimizer = tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss)
-
+		self.optimizer = tf.train.GradientDescentOptimizer(self.learning_rate).minimize(self.loss)
+		# self.sess.run(tf.variables_initializer(self.optimizer.variables()))
+		# self.optimizer.minimize(self.loss)
         
 
 # sess = tf.InteractiveSession()

@@ -5,6 +5,7 @@ Once a model is learned, use this to play it. that is run/exploit a policy to ge
 from flat_game import carmunk
 import numpy as np
 # from nn import neural_net, compute_fisher
+from nn_tf_with_fisher import Policy_Network
 import sys
 import time
 import tensorflow as tf
@@ -56,15 +57,15 @@ if __name__ == "__main__": # ignore
     # ITERATION = sys.argv[2]
     # FRAME = sys.argv[3]
     # saved_model = 'saved-models_'+BEHAVIOR+'/evaluatedPolicies/'+str(ITERATION)+'-164-150-100-50000-'+str(FRAME)+'.h5'
-    # saved_model = 'saved-models_yellow/evaluatedPolicies/9-164-150-100-50000-100000.h5'
-    sess = tf.InteractiveSession()
-    sess.run(tf.initialize_all_variables())
     # saved_model = 'saved-models_red/evaluatedPolicies/2-164-150-100-50000-100000.h5'
-    saved_model = 'saved-models_yellow/evaluatedPolicies/8-164-150-100-50000-100000.h5'
+    sess = tf.InteractiveSession()
+    # sess.run(tf.initialize_all_variables())
+    saved_model = 'saved-models_brown/evaluatedPolicies/2-164-150-100-50000-100000.h5'
+    # saved_model = 'saved-models_yellow/evaluatedPolicies/8-164-150-100-50000-100000.h5'
     brown_weights = [-0.26275824,  0.03635492,  0.09312051,  0.00469211, -0.18295909,  0.6987476, -0.59225824, -0.2201157 ]
 
     # weights = [-0.79380502 , 0.00704546 , 0.50866139 , 0.29466834, -0.07636144 , 0.09153848 ,-0.02632325 ,-0.09672041]
     # weights = [-0.06099233, -0.20316265, -0.1427778,  -0.16924885,  0.25280695, -0.0025343, 0.30678838, -0.86483369]
-    model = neural_net(NUM_STATES, [164, 150], saved_model)
+    model = Policy_Network(NUM_STATES, [164, 150], sess, saved_model)
     
-    print (play(model, weights, sess))
+    print (play(model, brown_weights))
